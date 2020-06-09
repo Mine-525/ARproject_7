@@ -6,13 +6,10 @@ final boolean BALL_DEBUG = false;
 
 final boolean USE_SAMPLE_IMAGE = false;
 
-// We've found that some Windows build-in cameras (e.g. Microsoft Surface)
-// cannot work with processing.video.Capture.*.
-// Instead we use DirectShow Library to launch these cameras.
 final boolean USE_DIRECTSHOW = true;
 
 // final double kMarkerSize = 0.036; // [m]
-final double kMarkerSize = 0.024; // [m]
+final double kMarkerSize = 0.01; // [m] 2.4cm
 
 Capture cap;
 DCapture dcap;
@@ -25,6 +22,8 @@ final int[] sceneList = {0x005A};
 final int[] actionList = {0x0272};
 
 HashMap<Integer, PMatrix3D> markerPoseMap;
+PMatrix3D pose_plane;
+PMatrix3D pose_jump;
 
 MarkerTracker markerTracker;
 PImage img;
@@ -37,13 +36,19 @@ boolean isStart = false;
 int cntDown = 0;
 boolean isJump = false;
 
-int frameRate = 10;
+int frameRate = 20;
+int frameCnt = 0;
 
 // model parameters
-double sceneScale = 0.02;
-double dinoScale = 0.02;
-double dinoXOff = 0;
-double dinoYOff = 0;
+float sceneScale = 0.02;
+float dinoScale = 0.02;
+float dinoXOff = 0;
+float dinoYOff = 0;
+
+// scale game logic
+float gameScale = 0.00015;
+
+GameWorld world;
 
 void selectCamera() {
   String[] cameras = Capture.list();
@@ -103,6 +108,10 @@ void setup() {
     keyState = new KeyState();
 
     markerPoseMap = new HashMap<Integer, PMatrix3D>();  // hashmap (code, pose)
+
+    world = new GameWorld();
+    //world.speedScale = 0.01;
+    //win = new PWindow();
 }
 
 void draw() {
@@ -135,34 +144,8 @@ void draw() {
         markerPoseMap.put(m.code, m.pose);
     }
     
-    pushMatrix();
-        // ready if enough markers, start if last for 4 sec
-        translate(-width/2, -height/2,-(height/2)/tan(radians(fov)));
-        if (isStart == false && isReady == false){
-            isReady = isReady(markers, isReady);
-        }
-        if (isStart == false && isReady == true){
-            cntDown ++;
-            if  (cntDown < frameRate){
-                fill(255, 0, 0);
-                textSize(40);
-                textAlign(CENTER);
-                text("Ready!", width/2, height/2);
-            }
-            if (cntDown >= frameRate){
-                int resTime = ceil((frameRate*4 + 1 - cntDown)/frameRate);
-                textSize(40);
-                text("Start in " + resTime, width/2, height/2-10);
-            }
-            if (cntDown > frameRate*4)
-                isStart = true;           
-        }
-        // show score
-        if (isStart){
-            frameCnt ++;
-            text(frameCnt, width-200, 100)
-        }
-    popMatrix();
+    // ready if enough markers, start if last for 2 sec
+    gameStart(markers);
 
     // use perspective camera 
     perspective(radians(fov), float(width)/float(height), 0.01, 1000.0);
@@ -172,41 +155,12 @@ void draw() {
     directionalLight(180, 150, 120, 0, 1, 0);
     lights();    
 
-    // draw scene if ready
-    if isReady{
-        pose_plane = markerPoseMap.get(sceneList[0]);
-        applyMatrix(pose_plane);    
-        drawPlane(sceneSize);  // ground
+    // marker poses
+    pose_plane = markerPoseMap.get(sceneList[0]);
+    pose_jump = markerPoseMap.get(actionList[0]);
 
-        PMatrix3D[] objOffs = new PMatrix3D[objNum];
-        objOffs = obj(); // offset of Cactus etc. relative to the ground from game logic
-        for (int i; i < objOffs.size(); i++){ 
-            pushMatrix();
-                applyMatrix(objOffs[i]);
-                drawObj(sceneSize); // render
-            popMatrix();
-        }
-    }
-
-    // draw dino if start
-    if (isStart){
-        // jump action
-        isJump = isJump(markerPoseMap, isStart, isJump);
-        // jump height from game logic
-        float dinoZOff = dinoOffset(isJump); 
-        // render
-        pushMatrix();
-            translate(dinoXOff, dinoYOff, dinoZOff);
-            drawDinor(dinoSize); 
-        popMatrix(); 
-
-        // game over
-        if (isHit()){
-            isStart = false;
-        }
-    }
-
-
-
-
+    // draw
+    // the red cylinder is jump button  
+    drawScene(isReady, isStart);
+    drawDino(isStart);
 }

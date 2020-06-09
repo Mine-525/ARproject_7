@@ -89,8 +89,8 @@ class MarkerTracker {
 
         // Filter bad contours
         int kImageSize = image_bgr.rows() * image_bgr.cols();
-        double kMarkerSizeMin = kImageSize * 0.01;
-        double kMarkerSizeMax = kImageSize * 0.99;
+        double kMarkerSizeMin = kImageSize * 0.005;
+        double kMarkerSizeMax = kImageSize * 0.5;
         boolean is_contour_valid = (marker_size > kMarkerSizeMin) 
             && (marker_size < kMarkerSizeMax)
             && contour_approx.size().height == kNumOfCorners
@@ -145,32 +145,23 @@ class MarkerTracker {
             if (!is_valid)
                 continue;
 
-            if (MARKER_TRACKER_DEBUG) {
-                // Draw lines
-                noFill();
-                strokeWeight(4);
-                stroke(random(255), random(255), random(255));
+            // if (MARKER_TRACKER_DEBUG) {
+            //     // Draw lines
+            //     noFill();
+            //     strokeWeight(4);
+            //     stroke(random(255), random(255), random(255));
 
-                beginShape();
-                Point[] p = contour_approx.toArray();
-                for (int i = 0; i < p.length; i++)
-                    vertex((float)p[i].x, (float)p[i].y);
-                endShape(CLOSE);
-            }
+            //     beginShape();
+            //     Point[] p = contour_approx.toArray();
+            //     for (int i = 0; i < p.length; i++)
+            //         vertex((float)p[i].x, (float)p[i].y);
+            //     endShape(CLOSE);
+            // }
 
             MatOfFloat[] line_parameters = new MatOfFloat[4];
 
             for (int i = 0; i < kNumOfCorners; i++) {
                 int kNumOfEdgePoints = 7;
-
-                if (MARKER_TRACKER_DEBUG) {
-                    // Draw corner points
-                    float kCircleSize = 10;
-                    fill(0, 255, 0);
-                    noStroke();
-                    Point[] p = contour_approx.toArray();
-                    circle((float)p[i].x, (float)p[i].y, kCircleSize);
-                }
 
                 Point[] approx_points = contour_approx.toArray();
                 PVector pa = pointToPVector(approx_points[(i+1) % kNumOfCorners]);
@@ -178,8 +169,6 @@ class MarkerTracker {
                 PVector kEdgeDirectionVec = PVector.div(PVector.sub(pa, pb), kNumOfEdgePoints);
                 float kEdgeDirectionVecNorm = kEdgeDirectionVec.mag();
 
-                // Added in Exercise 2 - Start
-                // ************************************
                 int stripe_length = (int)(0.8 * kEdgeDirectionVecNorm);
                 if (stripe_length < 5)
                     stripe_length = 5;
@@ -195,8 +184,6 @@ class MarkerTracker {
                 PVector kStripeVecY = new PVector(-kStripeVecX.y, kStripeVecX.x);
 
                 Mat stripe_image = new Mat(kStripeSize, CvType.CV_8UC1);
-                // Added in Exercise 2 - End
-                // ************************************
 
                 // Array for edge point centers
                 PVector[] edge_points = new PVector[kNumOfEdgePoints - 1];
@@ -204,15 +191,12 @@ class MarkerTracker {
                 for (int j = 1; j < kNumOfEdgePoints; j++) {
                     PVector edge_point = PVector.add(pb, PVector.mult(kEdgeDirectionVec, j));
 
-                    if (MARKER_TRACKER_DEBUG) {
-                        // Draw line delimeters
-                        fill(0, 0, 255);
-                        noStroke();
-                        circle(edge_point.x, edge_point.y, 2);
-                    }
-
-                    // Added in Exercise 2 - Start
-                    // **********************************************
+                    // if (MARKER_TRACKER_DEBUG) {
+                    //     // Draw line delimeters
+                    //     fill(0, 0, 255);
+                    //     noStroke();
+                    //     circle(edge_point.x, edge_point.y, 2);
+                    // }
 
                     // Construct a stripe image
                     for (int m = -1; m <= 1; m++) {
@@ -222,16 +206,16 @@ class MarkerTracker {
                                 PVector.mult(kStripeVecY, n)
                             );
 
-                            if (MARKER_TRACKER_DEBUG) {
-                                noStroke();
-                                if (isFirstStripe) {
-                                    fill(255, 0, 255);
-                                    circle(subpixel.x, subpixel.y, 2);
-                                } else {
-                                    fill(0, 255, 255);
-                                    circle(subpixel.x, subpixel.y, 2);
-                                }
-                            }
+                            // if (MARKER_TRACKER_DEBUG) {
+                            //     noStroke();
+                            //     if (isFirstStripe) {
+                            //         fill(255, 0, 255);
+                            //         circle(subpixel.x, subpixel.y, 2);
+                            //     } else {
+                            //         fill(0, 255, 255);
+                            //         circle(subpixel.x, subpixel.y, 2);
+                            //     }
+                            // }
 
                             // Fetch subpixel value
                             int kSubpixelValue = subpixSampleSafe(image_gray, subpixel);
@@ -292,20 +276,18 @@ class MarkerTracker {
                     edge_points[j - 1] = new PVector(edgeCenter.x, edgeCenter.y);
 
                     if (isFirstStripe) {
-                        if (MARKER_TRACKER_DEBUG) {
-                            // TODO: move stripe_image to another window
-                            PImage dst_stripe = createImage(100, 300, ARGB);
-                            Mat iplTmp = new Mat(new Size(100, 300), CvType.CV_8UC1);
-                            Imgproc.resize(stripe_image, iplTmp, new Size(100, 300), 0.0, 0.0, Imgproc.INTER_NEAREST);
-                            opencv.toPImage(iplTmp, dst_stripe);
-                            image(dst_stripe, 0, 0);
-                        }
+                        // if (MARKER_TRACKER_DEBUG) {
+                        //     // TODO: move stripe_image to another window
+                        //     PImage dst_stripe = createImage(100, 300, ARGB);
+                        //     Mat iplTmp = new Mat(new Size(100, 300), CvType.CV_8UC1);
+                        //     Imgproc.resize(stripe_image, iplTmp, new Size(100, 300), 0.0, 0.0, Imgproc.INTER_NEAREST);
+                        //     opencv.toPImage(iplTmp, dst_stripe);
+                        //     image(dst_stripe, 0, 0);
+                        // }
                         isFirstStripe = false;
                     }
                 } // --- end of loop over edge points of one edge
 
-                // Added in Homework 4 (2020/5/28), Part 1 - Start
-                // **************************************************************
                 // Derive line parameters from subpixel-precise edge points
 
                 MatOfPoint2f mat = new MatOfPoint2f();
@@ -324,12 +306,9 @@ class MarkerTracker {
                     stroke(0, 255, 255);
                     line(p1.x, p1.y, p2.x, p2.y);
                 }
-                // Added in Homework 4 (2020/5/28), Part 1 - End
-                // **************************************************************
+
             } // end of loop over the 4 edges
 
-            // Added in Homework 4 (2020/5/28) Part 2 - Start
-            // ****************************************************************
             // so far we stored the exact line parameters and show the lines in the image
             // now we have to calculate the exact corners
 
@@ -464,32 +443,30 @@ class MarkerTracker {
                 }
             }
 
-            if (MARKER_TRACKER_DEBUG) {
-                Mat iplTmp = new Mat();
-                int dispSize = 100;
-                Imgproc.resize(iplMarker, iplTmp, new Size(dispSize, dispSize), 
-                               0.0, 0.0, Imgproc.INTER_NEAREST);
+            // if (MARKER_TRACKER_DEBUG) {
+            //     Mat iplTmp = new Mat();
+            //     int dispSize = 100;
+            //     Imgproc.resize(iplMarker, iplTmp, new Size(dispSize, dispSize), 
+            //                    0.0, 0.0, Imgproc.INTER_NEAREST);
 
-                PImage dst_marker = createImage(dispSize, dispSize, ARGB);
-                opencv.toPImage(iplTmp, dst_marker);
+            //     PImage dst_marker = createImage(dispSize, dispSize, ARGB);
+            //     opencv.toPImage(iplTmp, dst_marker);
 
-                int dispX = markerCnt % 3;
-                int dispY = markerCnt / 3;
-                image(dst_marker, dispX * dispSize, dispY * dispSize);
+            //     int dispX = markerCnt % 3;
+            //     int dispY = markerCnt / 3;
+            //     image(dst_marker, dispX * dispSize, dispY * dispSize);
 
-                strokeWeight(1);
-                stroke(255, 0, 0);
-                for (int i = 0; i < 6; i++) {
-                    line((dispX + i / 6.0) * dispSize,      dispY  * dispSize,
-                         (dispX + i / 6.0) * dispSize, (dispY + 1) * dispSize);
-                    line( dispX      * dispSize, (dispY + i / 6.0) * dispSize,
-                         (dispX + 1) * dispSize, (dispY + i / 6.0) * dispSize);
-                }
-                markerCnt += 1;
-            }
+            //     strokeWeight(1);
+            //     stroke(255, 0, 0);
+            //     for (int i = 0; i < 6; i++) {
+            //         line((dispX + i / 6.0) * dispSize,      dispY  * dispSize,
+            //              (dispX + i / 6.0) * dispSize, (dispY + 1) * dispSize);
+            //         line( dispX      * dispSize, (dispY + i / 6.0) * dispSize,
+            //              (dispX + 1) * dispSize, (dispY + i / 6.0) * dispSize);
+            //     }
+            //     markerCnt += 1;
+            // }
 
-            // Added in Homework 5 (2020/6/3) - Start
-            // **************************************************************
             // correct the order of the corners
             if (angle != 0) {
                 Point[] corrected_corners = new Point[4];
@@ -517,19 +494,18 @@ class MarkerTracker {
 		    markers.add(marker);
 
             if (MARKER_TRACKER_DEBUG) {
-                println("Found: " + hex(code));
+                // println("Found: " + hex(code));
                 // marker.print_matrix();
             }
-            // Added in Homework 5 (2020/6/3) - End
-            // **************************************************************
+
         } // end of loop over contour candidates
 
         // If debugging, draw thresholds to be used for marker tracking
-        if (MARKER_TRACKER_DEBUG) {
-            fill(255, 0, 0);
-            textSize(20);
-            text("thresh : "    + thresh,    width-200, 50);
-            text("bw_thresh : " + bw_thresh, width-200, 80);
-        }
+        // if (MARKER_TRACKER_DEBUG) {
+        //     fill(255, 0, 0);
+        //     textSize(20);
+        //     text("thresh : "    + thresh,    width-200, 50);
+        //     text("bw_thresh : " + bw_thresh, width-200, 80);
+        // }
     }
 }
