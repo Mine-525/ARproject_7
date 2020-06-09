@@ -1,29 +1,31 @@
-PShape s;
+PShape trex, cuctas;
 float x1, y1;
 
 void setup() {
-  size(720, 480, P3D);
+  size(500, 500, P3D);
   smooth();
-  s = loadShape("TREX.obj");
-  s.scale(1000);
-  s.rotateY(radians(90));
+  trex = loadShape("TREX.obj");
+  //trex.scale(1000);
+  trex.rotateY(radians(90));
   
-  x1 = 300;
+  cuctas = loadShape("Cuctas_body.obj");
+  
+  x1 = width;
 }
 
 void draw() {
   background(0);
-  translate(width/2, height/2);
+  translate(0, height/2);
   lights();
-  perspective(radians(45), float(width)/float(height), 0.01, 1000.0);
+  perspective(radians(60), float(width)/float(height), 0.01, 1000.0);
   
-  rotateX(radians(-30));
+  //rotateX(radians(-30));
   
-  shape(s, -180, 0);
+  shape(trex, 100, 0, 50, 100);
   //s.rotateY(.01);
   
   pushMatrix();
-    translate(0,10,0);
+    translate(width/2,0,0);
     //rotateX(radians(-30));
     noStroke();
     fill(100, 70, 45);
@@ -31,10 +33,8 @@ void draw() {
   popMatrix();
   
   pushMatrix();
-    translate(x1, 0, 0);
-    noStroke();
-    fill(0, 255, 0);
-    box(10, 100, 50);
+    //translate(x1, -15, 0);
+    shape(cuctas, x1, 0, 15, 30);
   popMatrix();
   x1--;
 }
