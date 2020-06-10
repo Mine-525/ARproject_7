@@ -7,7 +7,9 @@ class GameWorld {
     PVector size;
     Dino dino;
     LinkedList<Barrier> barriers;
+    int baseScore;
     int score;
+    int highScore;
     boolean isOver;
     Random r;
     int interval;
@@ -70,9 +72,16 @@ class GameWorld {
         if (isOver) {
             return;
         }
+
         dino.update();
         for (Barrier barrier : barriers) {
             barrier.update();
+        }
+
+        baseScore += 10;
+        score = baseScore / 100 * 10;
+        if (score > highScore) {
+            highScore = score;
         }
 
         if (checkNewBarrier()) {
