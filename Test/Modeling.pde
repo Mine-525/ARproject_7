@@ -8,11 +8,10 @@
 void drawTrex(float scale){
     PShape Trex;
 
-    Trex = loadShape("TREX.obj");
+    Trex = loadShape("Model_files" + File.separator + "TREX.obj");
 
     Trex.scale(scale);
     pushMatrix();
-        //rotateY(radians(90));
         shape(Trex);
     popMatrix();
     //println("Draw T-REX");
@@ -35,6 +34,7 @@ void drawCuctas(float scale, int nOfBlocks){
     PShape Cactas;
     
     // load and scale .obj files of Cuctas
+    Cactas_top = loadShape("Model_files" + File.separator + "Cactus.obj");
 
     // set (nOfBlocks - 1) Body blocks
 
