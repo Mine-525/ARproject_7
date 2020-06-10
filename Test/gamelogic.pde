@@ -15,7 +15,7 @@ class GameWorld {
     int interval;
 
     GameWorld() {
-        size = new PVector(500, 500);
+        size = new PVector(500, 500, 0);
         reset();
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -128,7 +128,7 @@ class Dino {
     boolean isJumping;
 
     Dino() {
-        pos = new PVector(100, 0);
+        pos = new PVector(100, 0, 0);
         width = 50;
         height = 100;
         isJumping = false;
@@ -165,7 +165,7 @@ class Barrier {
     float speed;
 
     Barrier() {
-        pos = new PVector(1000, 0);
+        pos = new PVector(1000, 0, 0);
         width = 40;
         height = 80;
         speed = 300;
