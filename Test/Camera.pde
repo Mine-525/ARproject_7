@@ -84,6 +84,7 @@ void drawJumpBotton(PMatrix3D pose_jump){
         pushMatrix();
             applyMatrix(pose_jump);
             rotateX(90);
+            noStroke();
             fill(255, 120, 0);
             drawCylinder(0.005, 0.005, 0.003, 32);
         popMatrix();
@@ -98,14 +99,16 @@ void drawScene(boolean isReady, boolean isStart){
         // course
         // drawCourse(0.5);
         
-        noFill();
-        strokeWeight(3);
-        stroke(255, 0, 0);
-        line(0, 0, 0, 0.02, 0, 0); // draw x-axis
-        stroke(0, 255, 0);
-        line(0, 0, 0, 0, 0.02, 0); // draw y-axis
-        stroke(0, 0, 255);
-        line(0, 0, 0, 0, 0, 0.02); // draw z-axis 
+        if(GAME_DEBUG){
+            noFill();
+            strokeWeight(3);
+            stroke(255, 0, 0);
+            line(0, 0, 0, 0.02, 0, 0); // draw x-axis
+            stroke(0, 255, 0);
+            line(0, 0, 0, 0, 0.02, 0); // draw y-axis
+            stroke(0, 0, 255);
+            line(0, 0, 0, 0, 0, 0.02); // draw z-axis 
+        }
         
         // draw barriers 
         // for (Barrier barrier : world.barriers){
@@ -122,6 +125,7 @@ void drawScene(boolean isReady, boolean isStart){
     }
 }
 
+/*
 void drawDino(boolean isStart){
     // draw dino if start
     if (isStart && pose_plane != null){
@@ -151,3 +155,4 @@ void drawDino(boolean isStart){
         popMatrix();
     }
 }
+*/

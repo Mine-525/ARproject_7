@@ -51,16 +51,27 @@ class GameWorld {
 
         float dinoX1 = dino.pos.x;
         float dinoX2 = dino.pos.x + dino.width;
+        
+        // //original version
+        // for (Barrier barrier : barriers) {
+        //     if (dino.pos.y >= barrier.height) {
+        //         continue;
+        //     }
+
+        //     float barrierX1 = barrier.pos.x;
+        //     float barrierX2 = barrier.pos.x + barrier.width;
+
+        //     if (barrierX1 > dinoX1 && barrierX1 < dinoX2) return true;
+        //     if (barrierX2 > dinoX1 && barrierX2 < dinoX2) return true;
+        // }
+
+        //kitayama test
+        float dinoY1 = dino.pos.y;
+        float dinoY2 = dino.pos.y + dino.height;
         for (Barrier barrier : barriers) {
-            if (dino.pos.y >= barrier.height) {
-                continue;
+            if(barrier.checkCollision(dinoX1, dinoX2, dinoY1, dinoY2)){
+                return true;
             }
-
-            float barrierX1 = barrier.pos.x;
-            float barrierX2 = barrier.pos.x + barrier.width;
-
-            if (barrierX1 > dinoX1 && barrierX1 < dinoX2) return true;
-            if (barrierX2 > dinoX1 && barrierX2 < dinoX2) return true;
         }
 
         return false;
@@ -68,7 +79,7 @@ class GameWorld {
 
     void update() {
         // println("frameRate: "+frameRate);
-
+        
         if (isOver) {
             return;
         }
@@ -85,12 +96,18 @@ class GameWorld {
         }
 
         if (checkNewBarrier()) {
+
+            // // original version
+            // Barrier newBarrier = new Barrier();
+
+            //kitayama test
             Barrier newBarrier;
             if(r.nextInt(10)<8){
                 newBarrier = new Cactus();
             } else{
                 newBarrier = new Ptera();
             }
+
             barriers.add(newBarrier);
         }
 
@@ -107,12 +124,7 @@ class GameWorld {
     }
 
     void draw() {
-        // pushMatrix();
-        //     applyMatrix(pose_plane);
-        //     noStroke();
-        //     fill(0);
-        //     box(0.01, 0.001, 0.001);
-        // popMatrix();
+        new Cource().draw();
         dino.draw();
         for (Barrier barrier : barriers) {
             barrier.draw();
@@ -138,14 +150,16 @@ class Dino {
     float jumpSpeed;
     boolean isJumping;
     PShape Trex;
-
+    
     Dino() {
         pos = new PVector(100, 0, 0);
         width = 50;
         height = 100;
         isJumping = false;
         Trex = loadShape("./Model_files/TREX.obj");
-        Trex.scale(0.3);
+        Trex.width = this.width;
+        Trex.height = this.height;
+        Trex.scale(gameScale);
     }
 
     void update() {
@@ -166,12 +180,9 @@ class Dino {
     }
 
     void draw() {
-        stroke(0);
-        fill(0);
-        rect(pos.x, pos.y, width, height);
-        float dinoZOff = -this.pos.y * gameScale;
+        float dinoZOff = -this.pos.y * gameScale * 0.001;
         pushMatrix();
-            applyMatrix(pose_plane);
+            applyMatrix(pose_plane); 
             translate(dinoXOff, dinoYOff,dinoZOff);
             rotateX(radians(90));
             shape(Trex);
@@ -196,34 +207,62 @@ class Barrier {
         pos.x -= speed / frameRate;
     }
 
-    void draw() {
-        // stroke(255, 0, 0);
-        // fill(255, 0, 0);
-        // rect(pos.x, pos.y, width, height);
+    void draw() {}
+    boolean checkCollision(float dinoX1, float dinoX2, float dinoY1, float dinoY2){
+        return false;
     }
 }
 
 class Cactus extends Barrier{
     PShape cactus_body, cactus_top;
+    int nOfBlocks;
 
-    Cactus(){
+    Cactus(int nOfBlocks){
+        pos = new PVector(1000, 0, 0);
+        this.nOfBlocks = nOfBlocks;
+        width = 40;
+        height = nOfBlocks*20;
         cactus_body = loadShape("./Model_files/Cuctas_body.obj");
+        cactus_body.width = this.width;
+        cactus_body.height = 20;
+        cactus_body.scale(gameScale);
         cactus_top = loadShape("./Model_files/Cuctas_top.obj");
-        cactus_body.scale(0.2);
-        cactus_top.scale(0.2);
+        cactus_top.width = this.width;
+        cactus_top.height = 20;
+        cactus_top.scale(gameScale);
     }
 
+    Cactus(){
+        this(4);
+    }
+
+
     void draw(){
-        float barrierOff = -(this.pos.x-100) * gameScale;
+        float barrierZOff = -this.height*gameScale*0.001;
+        float barrierYOff = -(this.pos.x-100) * gameScale * 0.001;
         pushMatrix();
-            applyMatrix(pose_plane);
-            translate(0, barrierOff, 0);
-            rotateX(radians(90));
-            // shape(cactus_body);
-            translate(0, 0.01, 0);
-            rotateX(radians(90));
+            applyMatrix(pose_plane); 
+            translate(0, barrierYOff, barrierZOff);
+            for(int i=0; i<nOfBlocks-1; i++){
+                shape(cactus_body);
+                translate(0, 0, 20*gameScale*0.001);
+            }
             shape(cactus_top);
         popMatrix();
+    }
+
+    boolean checkCollision(float dinoX1, float dinoX2, float dinoY1, float dinoY2){
+        if (dinoY1 >= this.height) {
+            return false;
+        }
+
+        float barrierX1 = this.pos.x;
+        float barrierX2 = this.pos.x + this.width;
+
+        if (barrierX1 > dinoX1 && barrierX1 < dinoX2) return true;
+        if (barrierX2 > dinoX1 && barrierX2 < dinoX2) return true;
+
+        return false;
     }
 }
 
@@ -231,18 +270,64 @@ class Ptera extends Barrier{
     PShape ptera;
 
     Ptera(){
+        pos = new PVector(1000, 100, 0);
+        width = 80;
+        height = 40;
         ptera = loadShape("./Model_files/Ptera.obj");
-        ptera.scale(0.1);
+        ptera.width = this.width;
+        ptera.height = this.height;
+        ptera.scale(gameScale);
         ptera.rotateY(radians(180));
+        
     }
 
     void draw(){
-        float barrierOff = -(this.pos.x-100) * gameScale;
+        float barrierYOff = -(this.pos.x-100) * gameScale * 0.001;
+        float barrierZOff = -(this.pos.y) * gameScale * 0.001;
         pushMatrix();
-            applyMatrix(pose_plane);
-            translate(0, barrierOff, 0);
+            applyMatrix(pose_plane); 
+            translate(0, barrierYOff, barrierZOff);
             rotateX(radians(90));
             shape(ptera);
+        popMatrix();
+    }
+
+    
+    boolean checkCollision(float dinoX1, float dinoX2, float dinoY1, float dinoY2){
+        float barrierX1 = this.pos.x;
+        float barrierX2 = this.pos.x + this.width;
+        float barrierY1 = this.pos.y;
+        float barrierY2 = this.pos.y + this.height;
+
+        if (barrierX1 > dinoX1 && barrierX1 < dinoX2 && barrierY1 > dinoY1 && barrierY1 < dinoY2) return true;
+        if (barrierX1 > dinoX1 && barrierX1 < dinoX2 && barrierY2 > dinoY1 && barrierY2 < dinoY2) return true;
+        if (barrierX2 > dinoX1 && barrierX2 < dinoX2 && barrierY1 > dinoY1 && barrierY1 < dinoY2) return true;
+        if (barrierX2 > dinoX1 && barrierX2 < dinoX2 && barrierY2 > dinoY1 && barrierY2 < dinoY2) return true;
+
+        return false;
+    }
+}
+
+class Cource{
+    float width, length;
+
+    Cource(float width, float length){
+        this.width = width;
+        this.length = length;
+    }
+    
+    Cource(){
+        this(200, 1000);
+    }
+
+    void draw(){
+        float draw_scale = gameScale * 0.001;
+        pushMatrix();
+            applyMatrix(pose_plane); 
+            noStroke();
+            fill(153, 76, 0);
+            translate(0, -100*draw_scale, 0);
+            box(width*draw_scale, length*draw_scale, 0);
         popMatrix();
     }
 }

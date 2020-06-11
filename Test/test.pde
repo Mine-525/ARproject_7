@@ -1,8 +1,9 @@
 import gab.opencv.*;
 import processing.video.*;
 
-final boolean MARKER_TRACKER_DEBUG = true;
+final boolean MARKER_TRACKER_DEBUG = false;
 final boolean BALL_DEBUG = false;
+final boolean GAME_DEBUG = true;
 
 final boolean USE_SAMPLE_IMAGE = true;
 
@@ -46,7 +47,8 @@ float dinoXOff = 0;
 float dinoYOff = 0;
 
 // scale game logic
-float gameScale = 0.00015;
+// float gameScale = 0.00015;
+float gameScale = 0.1;
 
 GameWorld world;
 
@@ -165,10 +167,12 @@ void draw() {
         world.dinoJump();
       }
 
-      //debug 
-      if ((world.dino.isJumping == false && (keyPressed == true)) || (world.isOver == true && (keyPressed == true))){
-        world.dinoJump();
-      } 
+      if(GAME_DEBUG){
+        if ((world.dino.isJumping == false && (keyPressed == true)) || (world.isOver == true && (keyPressed == true))){
+          world.dinoJump();
+        }
+      }
+
       world.update();
     }
 
