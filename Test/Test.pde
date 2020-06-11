@@ -1,10 +1,11 @@
 import gab.opencv.*;
 import processing.video.*;
 
-final boolean MARKER_TRACKER_DEBUG = true;
+final boolean MARKER_TRACKER_DEBUG = false;
 final boolean BALL_DEBUG = false;
+final boolean GAME_DEBUG = true;
 
-final boolean USE_SAMPLE_IMAGE = false;
+final boolean USE_SAMPLE_IMAGE = true;
 
 final boolean USE_DIRECTSHOW = true;
 
@@ -46,7 +47,8 @@ float dinoXOff = 0;
 float dinoYOff = 0;
 
 // scale game logic
-float gameScale = 0.00015;
+// float gameScale = 0.00015;
+float gameScale = 0.1;
 
 GameWorld world;
 
@@ -76,7 +78,7 @@ void settings() {
   if (USE_SAMPLE_IMAGE) {
     // Here we introduced a new test image in Lecture 6 (20/05/27)
     size(1280, 720, P3D);
-    opencv = new OpenCV(this, "./marker_test2.jpg");
+    opencv = new OpenCV(this, "./Maker_sample/marker_test2.jpg");
     // size(1000, 730, P3D);
     // opencv = new OpenCV(this, "./marker_test.jpg");
   } else {
@@ -159,8 +161,25 @@ void draw() {
     pose_plane = markerPoseMap.get(sceneList[0]);
     pose_jump = markerPoseMap.get(actionList[0]);
 
+    if (isStart && pose_plane != null){
+      // detect jump action
+      if ((world.dino.isJumping == false && pose_jump == null) || (world.isOver == true && pose_jump == null)){
+        world.dinoJump();
+      }
+
+      if(GAME_DEBUG){
+        if ((world.dino.isJumping == false && (keyPressed == true)) || (world.isOver == true && (keyPressed == true))){
+          world.dinoJump();
+        }
+      }
+
+      world.update();
+    }
+
     // draw
     // the red cylinder is jump button  
     drawScene(isReady, isStart);
-    drawDino(isStart);
+    world.draw();
+
+    // drawDino(isStart);
 }
