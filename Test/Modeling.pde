@@ -1,3 +1,7 @@
+/////////////////////////////////////////////////////////////////
+// rendering method move to each object class in gamelogic.pde //
+/////////////////////////////////////////////////////////////////
+
 /**
  * Drawing Trex.
  * Default T-Rex's height is 0.1[m].
@@ -5,6 +9,7 @@
  * T-REX faces the direction of x-axis.
  * @param scale : scaling factor of T-rex's size
  */
+/*
 void drawTrex(float scale){
     PShape Trex;
 
@@ -20,6 +25,7 @@ void drawTrex(float scale){
 void drawTrex(){
     drawTrex(1);
 }
+*/
 
 
 /**
@@ -30,6 +36,7 @@ void drawTrex(){
  @ param scale : scaling factor of Cactus's size
  @ param nOfBlocks : (nOfBlocks - 1) Body blocks are piled and then a Top block
  */
+/*
 void drawCuctas(float scale, int nOfBlocks){
     PShape Cactas;
     
@@ -45,6 +52,7 @@ void drawCuctas(float scale, int nOfBlocks){
 void drawCuctas(int nOfBlocks){
     drawCuctas(1, nOfBlocks);
 }
+*/
 
 /**
  Drawing Course.
@@ -53,6 +61,7 @@ void drawCuctas(int nOfBlocks){
  The direction of length belongs x-axis.
  @ param scale : scaling factor of plane size
  */
+/*
 void drawCourse(float scale){
     float length = 0.6 * scale;
     float width = 0.15 * scale;
@@ -65,6 +74,6 @@ void drawCourse(float scale){
 void drawCourse(){
     drawCourse(1);
 }
+*/
 
- 
 
