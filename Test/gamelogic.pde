@@ -6,6 +6,7 @@ class GameWorld {
     // 500 * 500
     PVector size;
     Dino dino;
+    Hammer hammer;
     LinkedList<Barrier> barriers;
     int baseScore;
     int score;
@@ -25,6 +26,7 @@ class GameWorld {
 
     void reset() {
         dino = new Dino();
+        hammer = new Hammer();
         barriers = new LinkedList<Barrier>();
         score = 0;
         isOver = false;
@@ -126,6 +128,8 @@ class GameWorld {
     void draw() {
         new Cource().draw();
         dino.draw();
+        hammer.draw();
+
         for (Barrier barrier : barriers) {
             barrier.draw();
         }
@@ -330,4 +334,71 @@ class Cource{
             box(width*draw_scale, length*draw_scale, 0);
         popMatrix();
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Because I'm not sure about game logic part, I set them just for Modeling and they may be improper
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Hammer{
+    PVector pos;
+    float width;
+    float height;
+
+    // parameters of hammer head
+    float radius = 10 * gameScale;
+    float length = 50 * gameScale;
+    int sides = 20;
+
+    // parameter of body
+    float square = 10 * gameScale;
+    float tall = 100 * gameScale;
+
+    Hammer(){
+
+    }
+
+    void draw(){
+        float draw_scale = 0.001;
+        float radius_draw = radius * draw_scale;
+        float length_draw = length * draw_scale;
+        float square_draw = square * draw_scale;
+        float tall_draw = tall * draw_scale;
+
+        pushMatrix();
+            // adjust coordinates
+            applyMatrix(pose_hammer);
+            translate(0, 0, -tall_draw/2);
+            rotateX(radians(90));
+
+            if(GAME_DEBUG){
+            noFill();
+                strokeWeight(3);
+                stroke(255, 0, 0);
+                line(0, 0, 0, 0.02, 0, 0); // draw x-axis
+                stroke(0, 255, 0);
+                line(0, 0, 0, 0, 0.02, 0); // draw y-axis
+                stroke(0, 0, 255);
+                line(0, 0, 0, 0, 0, 0.02); // draw z-axis 
+            }
+
+            // body
+            noStroke();
+            fill(128, 75, 0);
+            box(square_draw, tall_draw, square_draw);
+
+            // head
+            noStroke();
+            fill(0);
+            pushMatrix();
+                translate(-(length_draw)/2, -tall_draw/2, 0);
+                rotateZ(radians(-90));
+                drawCylinder(radius_draw, radius_draw, length_draw, sides);
+            popMatrix();
+        popMatrix();
+    }
+
+
 }

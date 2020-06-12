@@ -20,11 +20,12 @@ float fov = 45; // for camera capture
 
 // Marker codes of scene and action
 final int[] sceneList = {0x005A};
-final int[] actionList = {0x0272};
+final int[] actionList = {0x0272, 0x1c44}; // 0x0272: jump, 0x1c44: hammer
 
 HashMap<Integer, PMatrix3D> markerPoseMap;
 PMatrix3D pose_plane;
 PMatrix3D pose_jump;
+PMatrix3D pose_hammer;
 
 MarkerTracker markerTracker;
 PImage img;
@@ -160,6 +161,7 @@ void draw() {
     // marker poses
     pose_plane = markerPoseMap.get(sceneList[0]);
     pose_jump = markerPoseMap.get(actionList[0]);
+    pose_hammer = markerPoseMap.get(actionList[1]);
 
     if (isStart && pose_plane != null){
       // detect jump action
@@ -180,6 +182,8 @@ void draw() {
     // the red cylinder is jump button  
     drawScene(isReady, isStart);
     world.draw();
+
+    println(pose_hammer != null);
 
     // drawDino(isStart);
 }
