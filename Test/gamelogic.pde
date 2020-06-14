@@ -154,17 +154,31 @@ class Dino {
     float height;
     float jumpSpeed;
     boolean isJumping;
-    PShape Trex;
+    PShape Body, LegR, LegL;
+    
+    // for animation
+    float theta_leg = 0;
+    float range_leg = 30;
+    boolean inc = true;
+    float leg_offx = -10 * gameScale * 0.001;
+    float leg_offy = -30 * gameScale * 0.001;
+    float leg_offz = -5 * gameScale * 0.001;
+    float leg_offtheta = -10;
     
     Dino() {
         pos = new PVector(100, 0, 0);
         width = 50;
         height = 100;
         isJumping = false;
-        Trex = loadShape("./Model_files/TREX.obj");
-        Trex.width = this.width;
-        Trex.height = this.height;
-        Trex.scale(gameScale);
+        Body = loadShape("Model_files" + File.separator + "T-body.obj");
+        LegR = loadShape("Model_files" + File.separator + "T-legR.obj");
+        LegL = loadShape("Model_files" + File.separator + "T-legL.obj");
+        Body.width = this.width;
+        Body.height = this.height;
+        Body.scale(gameScale);
+        LegL.scale(gameScale);
+        LegR.scale(gameScale);
+
     }
 
     void update() {
@@ -191,7 +205,35 @@ class Dino {
                 applyMatrix(pose_plane); 
                 translate(dinoXOff, dinoYOff,dinoZOff);
                 rotateX(radians(90));
-                shape(Trex);
+                shape(Body);
+                
+                // set leg angle
+                if(inc){
+                    theta_leg += 6;
+                }else{
+                    theta_leg -= 6;
+                }
+                if(theta_leg >= range_leg){
+                    inc = false;
+                }else if(theta_leg <= -range_leg){
+                    inc = true;
+                }
+
+                // draw right leg
+                pushMatrix();
+                    translate(leg_offx, leg_offy, leg_offz);
+                    rotateX(radians(leg_offtheta));
+                    rotateX(radians(theta_leg));
+                    shape(LegR);
+                popMatrix();
+
+                // draw left leg
+                pushMatrix();
+                    translate(-leg_offx, leg_offy, leg_offz);
+                    rotateX(radians(leg_offtheta));
+                    rotateX(radians(-theta_leg));
+                    shape(LegL);
+                popMatrix();
             popMatrix();
         }
     }
