@@ -29,6 +29,7 @@ class GameWorld {
         hammer = new Hammer();
         barriers = new LinkedList<Barrier>();
         score = 0;
+        baseScore = 0;
         isOver = false;
     }
 
@@ -128,7 +129,7 @@ class GameWorld {
     void draw() {
         new Cource().draw();
         dino.draw();
-        hammer.draw();
+        // hammer.draw();
 
         for (Barrier barrier : barriers) {
             barrier.draw();
@@ -185,12 +186,14 @@ class Dino {
 
     void draw() {
         float dinoZOff = -this.pos.y * gameScale * 0.001;
-        pushMatrix();
-            applyMatrix(pose_plane); 
-            translate(dinoXOff, dinoYOff,dinoZOff);
-            rotateX(radians(90));
-            shape(Trex);
-        popMatrix();
+        if (pose_plane != null) {
+            pushMatrix();
+                applyMatrix(pose_plane); 
+                translate(dinoXOff, dinoYOff,dinoZOff);
+                rotateX(radians(90));
+                shape(Trex);
+            popMatrix();
+        }
     }
 }
 
@@ -244,15 +247,17 @@ class Cactus extends Barrier{
     void draw(){
         float barrierZOff = -this.height*gameScale*0.001;
         float barrierYOff = -(this.pos.x-100) * gameScale * 0.001;
-        pushMatrix();
-            applyMatrix(pose_plane); 
-            translate(0, barrierYOff, barrierZOff);
-            for(int i=0; i<nOfBlocks-1; i++){
-                shape(cactus_body);
-                translate(0, 0, 20*gameScale*0.001);
-            }
-            shape(cactus_top);
-        popMatrix();
+        if (pose_plane != null) {
+            pushMatrix();
+                applyMatrix(pose_plane); 
+                translate(0, barrierYOff, barrierZOff);
+                for(int i=0; i<nOfBlocks-1; i++){
+                    shape(cactus_body);
+                    translate(0, 0, 20*gameScale*0.001);
+                }
+                shape(cactus_top);
+            popMatrix();
+        }
     }
 
     boolean checkCollision(float dinoX1, float dinoX2, float dinoY1, float dinoY2){
@@ -288,12 +293,14 @@ class Ptera extends Barrier{
     void draw(){
         float barrierYOff = -(this.pos.x-100) * gameScale * 0.001;
         float barrierZOff = -(this.pos.y) * gameScale * 0.001;
-        pushMatrix();
-            applyMatrix(pose_plane); 
-            translate(0, barrierYOff, barrierZOff);
-            rotateX(radians(90));
-            shape(ptera);
-        popMatrix();
+        if (pose_plane != null) {
+            pushMatrix();
+                applyMatrix(pose_plane); 
+                translate(0, barrierYOff, barrierZOff);
+                rotateX(radians(90));
+                shape(ptera);
+            popMatrix();
+        }
     }
 
     
@@ -326,13 +333,15 @@ class Cource{
 
     void draw(){
         float draw_scale = gameScale * 0.001;
-        pushMatrix();
-            applyMatrix(pose_plane); 
-            noStroke();
-            fill(153, 76, 0);
-            translate(0, -100*draw_scale, 0);
-            box(width*draw_scale, length*draw_scale, 0);
-        popMatrix();
+        if (pose_plane != null) {
+            pushMatrix();
+                applyMatrix(pose_plane); 
+                noStroke();
+                fill(153, 76, 0);
+                translate(0, -100*draw_scale, 0);
+                box(width*draw_scale, length*draw_scale, 0);
+            popMatrix();
+        }
     }
 }
 

@@ -5,7 +5,7 @@ final boolean MARKER_TRACKER_DEBUG = false;
 final boolean BALL_DEBUG = false;
 final boolean GAME_DEBUG = true;
 
-final boolean USE_SAMPLE_IMAGE = true;
+final boolean USE_SAMPLE_IMAGE = false;
 
 final boolean USE_DIRECTSHOW = true;
 

@@ -2,7 +2,7 @@ boolean isReady(ArrayList<Marker> markers, boolean isReady){
     int markerNum = markers.size();
     fill(255, 0, 0);
     textSize(40);
-    if (markerNum <4){   
+    if (markerNum <2){   
         fill(255, 0, 0);
         textSize(40);
         text("Marker not enough ", width/2, height/2);
@@ -63,7 +63,8 @@ void gameStart(ArrayList<Marker> markers){
         // show score
         if (isStart){
             frameCnt ++;
-            text("Score:" + world.score, width-200, 100);
+            text("Score \n" + world.score, width-200, 50);
+            text("High Score \n" + world.highScore, 200, 50);
         }
     popMatrix();
 }
