@@ -63,6 +63,7 @@ void gameStart(ArrayList<Marker> markers){
         // show score
         if (isStart){
             frameCnt ++;
+            fill(255, 0, 0);
             text("Score \n" + world.score, width-200, 50);
             text("High Score \n" + world.highScore, 200, 50);
         }

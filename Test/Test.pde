@@ -5,7 +5,7 @@ final boolean MARKER_TRACKER_DEBUG = false;
 final boolean BALL_DEBUG = false;
 final boolean GAME_DEBUG = true;
 
-final boolean USE_SAMPLE_IMAGE = false;
+final boolean USE_SAMPLE_IMAGE = true;
 
 final boolean USE_DIRECTSHOW = true;
 
@@ -169,9 +169,27 @@ void draw() {
         world.dinoJump();
       }
 
+
+      // hammer action
+
+      // like jump bottom
+      if (pose_hammer == null){
+        world.useHammer();
+      }
+      
+      // // hammer move to wall
+      // if (pose_hammer != null){
+      //   //hammer_position = ;
+      //   world.useHammer();
+      // }
+
       if(GAME_DEBUG){
-        if ((world.dino.isJumping == false && (keyPressed == true)) || (world.isOver == true && (keyPressed == true))){
+        if ((world.dino.isJumping == false && (keyPressed == true && key == 'j')) || (world.isOver == true && (keyPressed == true && key == 'j'))){
           world.dinoJump();
+        }
+
+        if (keyPressed == true && key == 'b'){
+          world.useHammer();
         }
       }
 
@@ -183,7 +201,8 @@ void draw() {
     drawScene(isReady, isStart);
     world.draw();
 
-    println(pose_hammer != null);
+    // println(pose_hammer != null);
+
 
     // drawDino(isStart);
 }

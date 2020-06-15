@@ -105,10 +105,13 @@ class GameWorld {
 
             //kitayama test
             Barrier newBarrier;
-            if(r.nextInt(10)<8){
+            int rand = r.nextInt(10);
+            if(rand < 5){
                 newBarrier = new Cactus();
-            } else{
+            } else if(5 <= rand && rand < 8){
                 newBarrier = new Ptera();
+            } else{
+                newBarrier = new Wall();
             }
 
             barriers.add(newBarrier);
@@ -120,7 +123,7 @@ class GameWorld {
 
         if (!barriers.isEmpty()) {
             Barrier first = barriers.getFirst();
-            if (first.pos.x + width < 0) {
+            if (first.pos.x + first.width < 0) {
                 barriers.removeFirst();
             }
         }
@@ -129,7 +132,7 @@ class GameWorld {
     void draw() {
         new Cource().draw();
         dino.draw();
-        // hammer.draw();
+        hammer.draw();
 
         for (Barrier barrier : barriers) {
             barrier.draw();
@@ -145,6 +148,21 @@ class GameWorld {
         if (dino.pos.y == 0) {
             dino.jump();
         }
+    }
+
+    void useHammer(){
+
+        //like jump buttom
+        if (barriers.getFirst() instanceof Wall) {
+            barriers.removeFirst();
+        }
+
+        // //hammer move to wall
+        // for(Barrier barrier : barriers){
+        //     if(barrier instanceof Wall && hammer.checkCollision(barrier)){
+        //         barriers.remove(barrier);
+        //     }
+        // }
     }
 }
 
@@ -361,6 +379,37 @@ class Ptera extends Barrier{
     }
 }
 
+class Wall extends Barrier{
+    Wall(){
+        width = 40;
+        height = 300;
+    }
+
+    void draw(){
+        // float barrierZOff = -this.height*gameScale*0.001;
+        float barrierYOff = -(this.pos.x-100) * gameScale * 0.001;
+        if (pose_plane != null) {
+            pushMatrix();
+                applyMatrix(pose_plane); 
+                translate(0, barrierYOff, 0);
+                noStroke();
+                fill(0);
+                box(this.width*2*gameScale*0.001,this.width*gameScale*0.001,this.height*gameScale*0.001);
+            popMatrix();
+        }
+    }
+    
+    boolean checkCollision(float dinoX1, float dinoX2, float dinoY1, float dinoY2){
+        float barrierX1 = this.pos.x;
+        float barrierX2 = this.pos.x + this.width;
+
+        if (barrierX1 > dinoX1 && barrierX1 < dinoX2) return true;
+        if (barrierX2 > dinoX1 && barrierX2 < dinoX2) return true;
+
+        return false;
+    }
+}
+
 class Cource{
     float width, length;
 
@@ -370,7 +419,7 @@ class Cource{
     }
     
     Cource(){
-        this(200, 1000);
+        this(200, 500);
     }
 
     void draw(){
@@ -408,7 +457,6 @@ class Hammer{
     float tall = 100 * gameScale;
 
     Hammer(){
-
     }
 
     void draw(){
@@ -451,5 +499,29 @@ class Hammer{
         popMatrix();
     }
 
+    // boolean checkCollision(Wall wall){
+    //     this.pos = hammer_position;
+    //     float hammerX1 = this.pos.x;
+    //     float hammerX2 = this.pos.x + this.width;
+    //     float hammerY1 = this.pos.y;
+    //     float hammerY2 = this.pos.y + this.height;
+    //     float hammerZ1 = this.pos.z;
+    //     float hammerZ2 = this.pos.z + this.length;
 
+    //     float wallX1 = wall.pos.x;
+    //     float wallX2 = wall.pos.x + wall.length;
+    //     float wallY1 = wall.pos.y;
+    //     float wallY2 = wall.pos.y + wall.height;
+    //     float wallZ1 = wall.pos.z - wall.width/2;
+    //     float wallZ2 = wall.pos.z + wall.width/2;
+
+    //     if (hammerX2 < wallX1) return false;
+    //     if (hammerX1 > wallX2) return false;
+    //     if (hammerY2 < wallY1) return false;
+    //     if (hammerY1 > wallY2) return false;
+    //     if (hammerZ2 < wallZ1) return false;
+    //     if (hammerZ1 > wallZ2) return false;
+
+    //     return true;
+    // }
 }
