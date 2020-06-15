@@ -3,9 +3,9 @@ import processing.video.*;
 
 final boolean MARKER_TRACKER_DEBUG = false;
 final boolean BALL_DEBUG = false;
-final boolean GAME_DEBUG = true;
+final boolean GAME_DEBUG = false;
 
-final boolean USE_SAMPLE_IMAGE = true;
+final boolean USE_SAMPLE_IMAGE = false;
 
 final boolean USE_DIRECTSHOW = true;
 
@@ -172,16 +172,15 @@ void draw() {
 
       // hammer action
 
-      // like jump bottom
-      if (pose_hammer == null){
-        world.useHammer();
-      }
-      
-      // // hammer move to wall
-      // if (pose_hammer != null){
-      //   //hammer_position = ;
+      // // like jump bottom
+      // if (pose_hammer == null){
       //   world.useHammer();
       // }
+      
+      // // hammer move to wall
+      if (pose_hammer != null){
+        world.useHammer();
+      }
 
       if(GAME_DEBUG){
         if ((world.dino.isJumping == false && (keyPressed == true && key == 'j')) || (world.isOver == true && (keyPressed == true && key == 'j'))){

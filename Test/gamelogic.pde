@@ -105,7 +105,7 @@ class GameWorld {
 
             //kitayama test
             Barrier newBarrier;
-            int rand = r.nextInt(10);
+            int rand = 9;//r.nextInt(10);
             if(rand < 5){
                 newBarrier = new Cactus();
             } else if(5 <= rand && rand < 8){
@@ -152,17 +152,17 @@ class GameWorld {
 
     void useHammer(){
 
-        //like jump buttom
-        if (barriers.getFirst() instanceof Wall) {
-            barriers.removeFirst();
-        }
-
-        // //hammer move to wall
-        // for(Barrier barrier : barriers){
-        //     if(barrier instanceof Wall && hammer.checkCollision(barrier)){
-        //         barriers.remove(barrier);
-        //     }
+        // //like jump buttom
+        // if (barriers.getFirst() instanceof Wall) {
+        //     barriers.removeFirst();
         // }
+
+        //hammer move to wall
+        for(Barrier barrier : barriers){
+            if(barrier instanceof Wall && hammer.checkCollision(barrier)){
+                barriers.remove(barrier);
+            }
+        }
     }
 }
 
@@ -261,6 +261,7 @@ class Barrier {
     PVector pos;
     float width;
     float height;
+    float length;
     float speed;
 
     Barrier() {
@@ -383,6 +384,7 @@ class Wall extends Barrier{
     Wall(){
         width = 40;
         height = 300;
+        length = 80;
     }
 
     void draw(){
@@ -394,7 +396,7 @@ class Wall extends Barrier{
                 translate(0, barrierYOff, 0);
                 noStroke();
                 fill(0);
-                box(this.width*2*gameScale*0.001,this.width*gameScale*0.001,this.height*gameScale*0.001);
+                box(this.length*gameScale*0.001,this.width*gameScale*0.001,this.height*gameScale*0.001);
             popMatrix();
         }
     }
@@ -429,7 +431,7 @@ class Cource{
                 applyMatrix(pose_plane); 
                 noStroke();
                 fill(153, 76, 0);
-                translate(0, -100*draw_scale, 0);
+                translate(0, (-(length/2)+100)*draw_scale, 0);
                 box(width*draw_scale, length*draw_scale, 0);
             popMatrix();
         }
@@ -499,29 +501,23 @@ class Hammer{
         popMatrix();
     }
 
-    // boolean checkCollision(Wall wall){
-    //     this.pos = hammer_position;
-    //     float hammerX1 = this.pos.x;
-    //     float hammerX2 = this.pos.x + this.width;
-    //     float hammerY1 = this.pos.y;
-    //     float hammerY2 = this.pos.y + this.height;
-    //     float hammerZ1 = this.pos.z;
-    //     float hammerZ2 = this.pos.z + this.length;
+    boolean checkCollision(Barrier wall){
+        PMatrix3D pose_hammer_gw = pose_plane.get();
+        pose_hammer_gw.invert();
+        pose_hammer_gw.apply(pose_hammer);
 
-    //     float wallX1 = wall.pos.x;
-    //     float wallX2 = wall.pos.x + wall.length;
-    //     float wallY1 = wall.pos.y;
-    //     float wallY2 = wall.pos.y + wall.height;
-    //     float wallZ1 = wall.pos.z - wall.width/2;
-    //     float wallZ2 = wall.pos.z + wall.width/2;
+        PVector hammer_point = new PVector(pose_hammer_gw.m03, pose_hammer_gw.m13, pose_hammer_gw.m23-tall*0.001);
+        this.pos = new PVector(-hammer_point.y*1000/gameScale, -hammer_point.z*1000/gameScale, -hammer_point.x*1000/gameScale);
 
-    //     if (hammerX2 < wallX1) return false;
-    //     if (hammerX1 > wallX2) return false;
-    //     if (hammerY2 < wallY1) return false;
-    //     if (hammerY1 > wallY2) return false;
-    //     if (hammerZ2 < wallZ1) return false;
-    //     if (hammerZ1 > wallZ2) return false;
+        float wallX1 = wall.pos.x;
+        float wallX2 = wall.pos.x + wall.length;
+        float wallY1 = wall.pos.y;
+        float wallY2 = wall.pos.y + wall.height;
+        float wallZ1 = wall.pos.z - wall.width/2;
+        float wallZ2 = wall.pos.z + wall.width/2;
 
-    //     return true;
-    // }
+        if ((wallX1 < this.pos.x && this.pos.x < wallX2) && (wallY1 < this.pos.y && this.pos.y < wallY2) && (wallZ1 < this.pos.z && this.pos.z < wallZ2)) return true;
+
+        return false;
+    }
 }
