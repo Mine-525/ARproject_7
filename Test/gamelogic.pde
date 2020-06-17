@@ -527,8 +527,8 @@ class Hammer{
         PVector hammer_point = new PVector(x_,y_,z_);
         this.pos = new PVector(-hammer_point.y*1000/gameScale, -hammer_point.x*1000/gameScale, -hammer_point.z*1000/gameScale);
 
-        float wallX1 = wall.pos.x;
-        float wallX2 = wall.pos.x + wall.width;
+        float wallX1 = wall.pos.x - 100;
+        float wallX2 = wall.pos.x - 100 + wall.width;
         float wallY1 = wall.pos.y - wall.width/2;
         float wallY2 = wall.pos.y + wall.width/2;
         float wallZ1 = wall.pos.z;
