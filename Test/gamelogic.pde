@@ -157,11 +157,20 @@ class GameWorld {
         //     barriers.removeFirst();
         // }
 
-        //hammer move to wall
+        //hammer move to wall        
+        int index = 0;
+        int toRemv = -1;
         for(Barrier barrier : barriers){
-            if(barrier instanceof Wall && hammer.checkCollision(barrier)){
-                barriers.remove(barrier);
+            if(barrier instanceof Wall){
+                if(hammer.checkCollision(barrier)){
+                    toRemv = index;
+                    break;
+                }
             }
+            index ++;
+        }
+        if (toRemv > -1){
+            barriers.remove(toRemv);
         }
     }
 }
@@ -458,6 +467,9 @@ class Hammer{
     float square = 10 * gameScale;
     float tall = 100 * gameScale;
 
+    float draw_scale = 0.001;
+    float tall_draw = tall * draw_scale;
+
     Hammer(){
     }
 
@@ -468,37 +480,39 @@ class Hammer{
         float square_draw = square * draw_scale;
         float tall_draw = tall * draw_scale;
 
-        pushMatrix();
-            // adjust coordinates
-            applyMatrix(pose_hammer);
-            translate(0, 0, -tall_draw/2);
-            rotateX(radians(90));
-
-            if(GAME_DEBUG){
-            noFill();
-                strokeWeight(3);
-                stroke(255, 0, 0);
-                line(0, 0, 0, 0.02, 0, 0); // draw x-axis
-                stroke(0, 255, 0);
-                line(0, 0, 0, 0, 0.02, 0); // draw y-axis
-                stroke(0, 0, 255);
-                line(0, 0, 0, 0, 0, 0.02); // draw z-axis 
-            }
-
-            // body
-            noStroke();
-            fill(128, 75, 0);
-            box(square_draw, tall_draw, square_draw);
-
-            // head
-            noStroke();
-            fill(0);
+        if (pose_hammer!=null){
             pushMatrix();
-                translate(-(length_draw)/2, -tall_draw/2, 0);
-                rotateZ(radians(-90));
-                drawCylinder(radius_draw, radius_draw, length_draw, sides);
+                // adjust coordinates
+                applyMatrix(pose_hammer);
+                translate(0, 0, -tall_draw/2);
+                rotateX(radians(90));
+
+                if(GAME_DEBUG){
+                noFill();
+                    strokeWeight(3);
+                    stroke(255, 0, 0);
+                    line(0, 0, 0, 0.02, 0, 0); // draw x-axis
+                    stroke(0, 255, 0);
+                    line(0, 0, 0, 0, 0.02, 0); // draw y-axis
+                    stroke(0, 0, 255);
+                    line(0, 0, 0, 0, 0, 0.02); // draw z-axis 
+                }
+
+                // body
+                noStroke();
+                fill(128, 75, 0);
+                box(square_draw, tall_draw, square_draw);
+
+                // head
+                noStroke();
+                fill(0);
+                pushMatrix();
+                    translate(-(length_draw)/2, -tall_draw/2, 0);
+                    rotateZ(radians(-90));
+                    drawCylinder(radius_draw, radius_draw, length_draw, sides);
+                popMatrix();
             popMatrix();
-        popMatrix();
+        }
     }
 
     boolean checkCollision(Barrier wall){
@@ -506,15 +520,29 @@ class Hammer{
         pose_hammer_gw.invert();
         pose_hammer_gw.apply(pose_hammer);
 
-        PVector hammer_point = new PVector(pose_hammer_gw.m03, pose_hammer_gw.m13, pose_hammer_gw.m23-tall*0.001);
-        this.pos = new PVector(-hammer_point.y*1000/gameScale, -hammer_point.z*1000/gameScale, -hammer_point.x*1000/gameScale);
+        float x_ = ( -pose_hammer_gw.m02 * tall_draw + pose_hammer_gw.m03);///(draw_scale*gameScale);
+        float y_ = ( -pose_hammer_gw.m12 * tall_draw + pose_hammer_gw.m13);///(draw_scale*gameScale);
+        float z_ = ( -pose_hammer_gw.m22 * tall_draw + pose_hammer_gw.m23);///(draw_scale*gameScale);
+        
+        PVector hammer_point = new PVector(x_,y_,z_);
+        this.pos = new PVector(-hammer_point.y*1000/gameScale, -hammer_point.x*1000/gameScale, -hammer_point.z*1000/gameScale);
 
         float wallX1 = wall.pos.x;
-        float wallX2 = wall.pos.x + wall.length;
-        float wallY1 = wall.pos.y;
-        float wallY2 = wall.pos.y + wall.height;
-        float wallZ1 = wall.pos.z - wall.width/2;
-        float wallZ2 = wall.pos.z + wall.width/2;
+        float wallX2 = wall.pos.x + wall.width;
+        float wallY1 = wall.pos.y - wall.width/2;
+        float wallY2 = wall.pos.y + wall.width/2;
+        float wallZ1 = wall.pos.z;
+        float wallZ2 = wall.pos.z + wall.height;
+
+        if (GAME_DEBUG){
+            println("pos.x: "+pos.x);
+            println("pos.y: "+pos.y);//
+            println("pos.z: "+pos.z);//
+            println("wallZ1: "+wallZ1);
+            println("wallZ2: "+wallZ2);
+            println("wallY1: "+wallY1);
+            println("wallY2: "+wallY2);
+        }
 
         if ((wallX1 < this.pos.x && this.pos.x < wallX2) && (wallY1 < this.pos.y && this.pos.y < wallY2) && (wallZ1 < this.pos.z && this.pos.z < wallZ2)) return true;
 
