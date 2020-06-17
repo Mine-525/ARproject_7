@@ -3,9 +3,9 @@ import processing.video.*;
 
 final boolean MARKER_TRACKER_DEBUG = false;
 final boolean BALL_DEBUG = false;
-final boolean GAME_DEBUG = false;
+final boolean GAME_DEBUG = true;
 
-final boolean USE_SAMPLE_IMAGE = false;
+final boolean USE_SAMPLE_IMAGE = true;
 
 final boolean USE_DIRECTSHOW = true;
 
@@ -52,6 +52,8 @@ float dinoYOff = 0;
 float gameScale = 0.1;
 
 GameWorld world;
+
+boolean isRec = false;
 
 void selectCamera() {
   String[] cameras = Capture.list();
@@ -200,6 +202,13 @@ void draw() {
     drawScene(isReady, isStart);
     world.draw();
 
+    if (keyPressed == true && key =='r'){
+      isRec = !isRec;
+    }
+    if (isRec){
+      saveFrame("./video/demo-####.jpg");
+    }
+    
     // println(pose_hammer != null);
 
 

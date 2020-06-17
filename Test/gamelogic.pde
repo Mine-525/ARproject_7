@@ -105,7 +105,7 @@ class GameWorld {
 
             //kitayama test
             Barrier newBarrier;
-            int rand = 9;//r.nextInt(10);
+            int rand = r.nextInt(10);
             if(rand < 5){
                 newBarrier = new Cactus();
             } else if(5 <= rand && rand < 8){
@@ -393,7 +393,7 @@ class Wall extends Barrier{
     Wall(){
         width = 40;
         height = 300;
-        length = 80;
+        length = 160;
     }
 
     void draw(){

@@ -37,6 +37,8 @@ void gameStart(ArrayList<Marker> markers){
             isReady = isReady(markers, isReady);
         }
         if (isStart == false && isReady == true){
+            fill(255);
+            rect(width/2-100,  height/2-60, 200,80);
             cntDown ++;
             if  (cntDown < frameRate){
                 fill(255, 0, 0);
@@ -55,6 +57,8 @@ void gameStart(ArrayList<Marker> markers){
                 isStart = true;           
         }
         if (world.isOver == true){
+            fill(255);
+            rect(width/2-220,  height/2-60, 440,80);
             fill(255, 0, 0);
             textSize(40);
             textAlign(CENTER);
@@ -88,7 +92,7 @@ void drawJumpBotton(PMatrix3D pose_jump){
             rotateX(90);
             noStroke();
             fill(255, 120, 0);
-            drawCylinder(0.005, 0.005, 0.003, 32);
+            drawCylinder(0.003, 0.003, 0.003, 32);
         popMatrix();
     }
 }
